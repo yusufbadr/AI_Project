@@ -1,13 +1,4 @@
-#check winner not working correct
 
-# ['b', 'b', 'b', 'b', 'b', 'b', 'b', ' ']
-# ['b', 'w', 'b', 'b', 'b', 'b', 'b', 'w']
-# ['b', 'w', 'b', 'w', 'w', 'b', 'b', 'w']
-# ['b', 'w', 'b', 'b', 'b', 'b', 'b', 'w']
-# ['b', 'b', 'b', 'b', 'b', 'b', 'b', 'w']
-# ['b', 'w', 'w', 'b', 'b', 'b', 'b', 'w']
-# ['b', 'b', 'w', 'b', 'b', 'b', 'b', 'w']
-# ['b', 'b', 'b', 'b', 'b', 'b', 'b', ' ']
 
 
 import copy
@@ -42,10 +33,9 @@ def get_best_move(board, player, difficulty):
         best_move = None
 
         for [i, j] in get_valid_moves(player, board):
-            
-            board[i][j] = player
-            score = minimax(board, difficulty, -float("inf"), float("inf"), 'w')
-            board[i][j] = ' '
+            new_board = copy.deepcopy(board)
+            make_move(i, j, player, new_board)
+            score = minimax(new_board, difficulty, -float("inf"), float("inf"), 'w')
             if (score>max_score):
                 max_score = score
                 best_move = [i, j]
@@ -57,10 +47,9 @@ def get_best_move(board, player, difficulty):
         best_move = None
 
         for [i, j] in get_valid_moves(player, board):
-            
-            board[i][j] = player
-            score = minimax(board, difficulty, -float("inf"), float("inf"), 'b')
-            board[i][j] = ' '
+            new_board = copy.deepcopy(board)
+            make_move(i, j, player, new_board)
+            score = minimax(new_board, difficulty, -float("inf"), float("inf"), 'b')
             if (score<min_score):
                 min_score = score
                 best_move = [i, j]
@@ -142,8 +131,6 @@ def is_valid_move(i, j, player, board):
     return False
 
 
-
-
 def outflank(i, j, player, board):
     # dx = 1, 0, -1, 0
     # dy = 0, -1, 0, 1
@@ -196,8 +183,8 @@ def make_move(i, j, player, board):
         return True
     
     return False
-    
-    
+
+
 
 def check_winner(board):
     valid_b = get_valid_moves('b', board)
@@ -237,10 +224,11 @@ def game_controller(board):
         print(i)
         print(players[i], "'s turn\n")
         if i==1:
-            best_move = get_best_move(board, players[i], 5)
-            if (best_move is not None):
-                [x, y] = get_best_move(board, players[i], 5)
-                make_move(x, y, players[i], board)
+            if len(get_valid_moves(players[i], board)>0):
+                best_move = get_best_move(board, players[i], 5)
+                if best_move is not None:
+                    [x, y] = best_move
+                    make_move(x, y, players[i], board)
             
         else:
             print("Valid moves:\n")
@@ -266,9 +254,39 @@ def game_controller(board):
         else:
             print("Winner is: ", winner)
             break
-     
-    
 
+# test code ai vs ai
+def game_controller2(board):
+    players = ['b', 'w']
+    i = -1
+    while True:
+        i = (i + 1) % 2
+        print_board(board)
+        print(players[i], "'s turn\n")
+
+        if i == 1:  # AI's turn w
+            valid_moves = get_valid_moves(players[i], board)
+            if len(valid_moves) > 0:
+                best_move = get_best_move(board, players[i], 1)
+                if best_move is not None:
+                    [x, y] = best_move
+                    make_move(x, y, players[i], board)
+        else:  # AI's turn b
+            valid_moves = get_valid_moves(players[i], board)
+            if len(valid_moves) > 0:
+                best_move = get_best_move(board, players[i], 5)
+                if best_move is not None:
+                    [x, y] = best_move
+                    make_move(x, y, players[i], board)
+        
+        winner = check_winner(board)
+        
+        if winner == 'd':
+            print("Draw\n")
+            break
+        elif winner != 'x':
+            print("Winner is: ", winner)
+            break
 
 
 def main():
@@ -279,7 +297,7 @@ def main():
     board[3][4] = 'b'
     board[4][4] = 'w'
     board[4][3] = 'b'
-    game_controller(board)
+    game_controller2(board)
     # print(get_valid_moves('b', board))
 
     # disks: b or w
