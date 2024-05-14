@@ -23,14 +23,15 @@ def evaluate_state(board):
     elif winner=='w':
         return diff_bw+diff_valid_moves-1000
 
-    return diff_bw+diff_valid_moves
+    return (diff_bw*0)+(diff_valid_moves)
 
 
 def get_best_move(board, player, difficulty):
-    
+    best_move = None
+    i = 0
+    j = 0
     if player == 'b':
         max_score = -float("inf")
-        best_move = None
 
         for [i, j] in get_valid_moves(player, board):
             new_board = copy.deepcopy(board)
@@ -40,7 +41,6 @@ def get_best_move(board, player, difficulty):
                 max_score = score
                 best_move = [i, j]
 
-        return best_move
     
     else:
         min_score = float("inf")
@@ -54,7 +54,10 @@ def get_best_move(board, player, difficulty):
                 min_score = score
                 best_move = [i, j]
 
-        return best_move
+
+    if (best_move is None):
+        best_move = [i, j]
+    return best_move
 
 
 def get_all_valid_new_states(board, player):
@@ -212,8 +215,20 @@ def check_winner(board):
         
 
 def print_board(board):
+    b = 0
+    w = 0
+    
     for row in board:
+        for col in row:
+            if (col =='w'):
+                w+=1
+            elif col == 'b':
+                b+=1
         print(row)
+        
+    print("Black: ", b, "-- White: ", w)
+
+
 
 def game_controller(board):
     players = ['b', 'w']
@@ -255,6 +270,8 @@ def game_controller(board):
             print("Winner is: ", winner)
             break
 
+
+
 # test code ai vs ai
 def game_controller2(board):
     players = ['b', 'w']
@@ -262,6 +279,7 @@ def game_controller2(board):
     while True:
         i = (i + 1) % 2
         print_board(board)
+        print(get_valid_moves(players[i], board))
         print(players[i], "'s turn\n")
 
         if i == 1:  # AI's turn w
@@ -274,7 +292,7 @@ def game_controller2(board):
         else:  # AI's turn b
             valid_moves = get_valid_moves(players[i], board)
             if len(valid_moves) > 0:
-                best_move = get_best_move(board, players[i], 5)
+                best_move = get_best_move(board, players[i], 7)
                 if best_move is not None:
                     [x, y] = best_move
                     make_move(x, y, players[i], board)
@@ -287,6 +305,8 @@ def game_controller2(board):
         elif winner != 'x':
             print("Winner is: ", winner)
             break
+        
+    print_board(board)
 
 
 def main():
