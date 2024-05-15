@@ -19,8 +19,8 @@ SCREEN_HEIGHT = int(400 * SCALE_FACTOR)
 BOARD_SIZE = 8
 CELL_SIZE = int(SCREEN_WIDTH // (BOARD_SIZE * SCALE_FACTOR))
 
-DISC_B = pygame.image.load('D:/FCAI/AI/AI_Project/black_disc.png')
-DISC_W = pygame.image.load('D:/FCAI/AI/AI_Project/white_disc.png')
+DISC_B = pygame.image.load('black_disc.png')
+DISC_W = pygame.image.load('white_disc.png')
 
 board = [[' ' for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
 board[3][3] = 'w'
@@ -76,12 +76,13 @@ def no_valid_moves(board):
 def game_controller(board, player, screen, player_discs, difficulty):  
     if no_valid_moves(board):
         print("No valid moves remaining for either players\nGame Over!")
-        winner = check_winner(board)
+        winner = check_winner(board, player_discs)
         if winner == 'b':
             print("Player B wins!")
         elif winner == 'w':
             print("Player W wins!")
         else:
+            print_board(board)
             print("It's a draw!")
         pygame.quit()
 
@@ -121,7 +122,7 @@ def game_controller(board, player, screen, player_discs, difficulty):
             print("No valid moves for player W")
             return
         
-        best_move = get_best_move(board, player, difficulty)
+        best_move = get_best_move(board, player, difficulty, player_discs)
         if best_move is not None:
             [x, y] = best_move
             make_move(x, y, player, board)
@@ -173,13 +174,14 @@ def main():
             break
 
     print("Game Over!")
-    winner = check_winner(board)
+    winner = check_winner(board, player_discs)
     if winner == 'b':
         print("Player B wins!")
     elif winner == 'w':
         print("Player W wins!")
     else:
-        print("It's a draw!")
+        print_board(board)
+        print("It's a draw!2")
 
     pygame.quit()
 

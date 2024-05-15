@@ -3,7 +3,7 @@
 
 import copy
 # b-w
-def evaluate_state(board):
+def evaluate_state(board, players_disks):
     # max
     # b w diff_in_#ofvalid
     diff_bw = 0
@@ -16,17 +16,17 @@ def evaluate_state(board):
                 diff_bw-=1
 
     diff_valid_moves = len(get_valid_moves('b', board)) - len(get_valid_moves('w', board))
-    winner = check_winner(board)
+    winner = check_winner(board, players_disks)
 
     if winner=='b':
         return diff_bw+diff_valid_moves+1000
     elif winner=='w':
         return diff_bw+diff_valid_moves-1000
 
-    return (diff_bw*0)+(diff_valid_moves)
+    return (diff_bw)+(diff_valid_moves*10)
 
 
-def get_best_move(board, player, difficulty):
+def get_best_move(board, player, difficulty, players_disks):
     best_move = None
     i = 0
     j = 0
@@ -36,7 +36,7 @@ def get_best_move(board, player, difficulty):
         for [i, j] in get_valid_moves(player, board):
             new_board = copy.deepcopy(board)
             make_move(i, j, player, new_board)
-            score = minimax(new_board, difficulty, -float("inf"), float("inf"), 'w')
+            score = minimax(new_board, difficulty, -float("inf"), float("inf"), 'w', players_disks)
             if (score>max_score):
                 max_score = score
                 best_move = [i, j]
@@ -49,7 +49,7 @@ def get_best_move(board, player, difficulty):
         for [i, j] in get_valid_moves(player, board):
             new_board = copy.deepcopy(board)
             make_move(i, j, player, new_board)
-            score = minimax(new_board, difficulty, -float("inf"), float("inf"), 'b')
+            score = minimax(new_board, difficulty, -float("inf"), float("inf"), 'b', players_disks)
             if (score<min_score):
                 min_score = score
                 best_move = [i, j]
@@ -72,14 +72,14 @@ def get_all_valid_new_states(board, player):
     return new_boards
 
 
-def minimax(board, depth, alpha, beta, player):
-    if depth == 0 or check_winner(board)!='x':
-        return evaluate_state(board)
+def minimax(board, depth, alpha, beta, player, players_disks):
+    if depth == 0 or check_winner(board, players_disks)!='x':
+        return evaluate_state(board, players_disks)
 
     if player == 'b':
         max_score = -float("inf")
         for child in get_all_valid_new_states(board, player):
-            score = minimax(child, depth - 1, alpha, beta, 'w')
+            score = minimax(child, depth - 1, alpha, beta, 'w', players_disks)
             max_score = max(max_score, score)
             alpha = max(alpha, score)
             if beta <= alpha:
@@ -88,7 +88,7 @@ def minimax(board, depth, alpha, beta, player):
     else:
         min_score = float("inf")
         for child in get_all_valid_new_states(board, player):
-            score = minimax(child, depth - 1, alpha, beta, 'b')
+            score = minimax(child, depth - 1, alpha, beta, 'b', players_disks)
             min_score = min(min_score, score)
             beta = min(beta, score)
             if beta <= alpha:
@@ -189,11 +189,14 @@ def make_move(i, j, player, board):
 
 
 
-def check_winner(board):
+def check_winner(board, players_disks):
     valid_b = get_valid_moves('b', board)
     valid_w = get_valid_moves('w', board)
+    
+    w_can_play = len(valid_w) > 0 and players_disks['w'] > 0 
+    b_can_play = len(valid_b) > 0 and players_disks['b'] > 0 
 
-    if (len(valid_b) == 0 and len(valid_w) == 0):
+    if (not w_can_play and not b_can_play):
         b_score = 0
         w_score = 0
         for i in range(8):
@@ -258,7 +261,7 @@ def game_controller(board):
                     r = int(input("i:"))
                     c = int(input("j:"))
 
-        winner = check_winner(board)
+        winner = check_winner(board, players)
         
         if winner == 'd':
             print("Draw\n")
