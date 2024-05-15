@@ -239,7 +239,7 @@ def game_controller(board):
         print(i)
         print(players[i], "'s turn\n")
         if i==1:
-            if len(get_valid_moves(players[i], board)>0):
+            if len(get_valid_moves(players[i], board))>0:
                 best_move = get_best_move(board, players[i], 5)
                 if best_move is not None:
                     [x, y] = best_move
@@ -309,22 +309,22 @@ def game_controller2(board):
     print_board(board)
 
 
-def main():
-    rows = 8
-    cols = 8
-    board = [[' ' for _ in range(cols)] for _ in range(rows)]
-    board[3][3] = 'w'
-    board[3][4] = 'b'
-    board[4][4] = 'w'
-    board[4][3] = 'b'
-    game_controller2(board)
-    # print(get_valid_moves('b', board))
+# def main():
+#     rows = 8
+#     cols = 8
+#     board = [[' ' for _ in range(cols)] for _ in range(rows)]
+#     board[3][3] = 'w'
+#     board[3][4] = 'b'
+#     board[4][4] = 'w'
+#     board[4][3] = 'b'
+#     game_controller(board)
+#     # print(get_valid_moves('b', board))
 
-    # disks: b or w
+#     # disks: b or w
 
 
 
-# if __name__=="__main__":
-#     main()
+# # if __name__=="__main__":
+# #     main()
 
-main()
+# main()
